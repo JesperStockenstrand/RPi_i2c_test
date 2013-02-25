@@ -1,7 +1,7 @@
 CC      := gcc
 CFLAGS  := -g -Wall -lpthread
 
-TARGET	:= sysinfo
+TARGET	:= rpi_i2c_test
 SOURCES := $(shell find src/ -type f -name *.c)
 OBJECTS := $(patsubst src/%,build/%,$(SOURCES:.c=.o))
 DEPS	:= $(OBJECTS:.o=.deps)
