@@ -1,3 +1,20 @@
+/* RPi_i2c_test - Used together with schematics at http://raspify.stockenstrand.com  
+ * Copyright (C) 2013 Jesper Stockenstrand
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.	
+ */
+
 #include <linux/input.h>
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
@@ -30,9 +47,9 @@ int checkButton() {
     if (buttonsConnected == -1) {
         initButtons();
     }
-	if (buttonsConnected == 0) {
-		return 999;
-	}
+    if (buttonsConnected == 0) {
+        return 999;
+    }
 
 
 if (buttonsConnected == 1) {

@@ -1,24 +1,18 @@
-/*
- * lcd.c
- * 
- * Copyright 2012 Jesper Stockenstrand <jesper@stockenstrand.com>
- * 
- * This program is free software; you can redistribute it and/or modify
+/* RPi_i2c_test - Used together with schematics at http://raspify.stockenstrand.com  
+ * Copyright (C) 2013 Jesper Stockenstrand
+ *
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- * 
- * 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.	
  */
 
 #include <stdio.h>
@@ -60,7 +54,6 @@
 static int fd;
 static char *fileName = "/dev/i2c-0";
 static int address = 0x20;
-//int lcd_initialised = 0; // 0 = not initialised, 1 = initialised
 static int lcd_connected = -1; // -1 = unknown, 0 = not connected, 1 = connected
 
 static void lcd_reset();
@@ -160,7 +153,7 @@ static void lcd_init() {
 static void write_nibbles(int bits) {
   write_lcd((bits >> 4) & 0x0F);
   write_lcd(bits & 0x0F);
-  usleep(500); //500
+  usleep(500); 
 }
 
 static void write_char(char letter) {
