@@ -175,6 +175,12 @@ int main(void)
     int display_mode = mode_CPU; 
     char tmp_value[20];
     mem_tot = mem_total()/1024;
+    
+    lcd_line("    RPi i2c test");
+    lcd_line("    Copyright (C)");
+    lcd_line("        2013");
+    lcd_line("Jesper Stockenstrand");
+    usleep(5000000);
     for(;;) {
         int cpu_l;
             
