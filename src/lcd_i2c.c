@@ -24,6 +24,8 @@
 #include <unistd.h> 
 
 
+
+
 //Define pin nr for EN and RS
 #define LCD_RS 0x20
 #define LCD_EN 0x80
@@ -51,6 +53,8 @@
 #define CMD_CAH	 0x01   //Clear and Home
 #define CMD_HME  0x02	  //Move home
 
+
+
 static int fd;
 static char *fileName = "/dev/i2c-0";
 static int address = 0x20;
@@ -65,101 +69,101 @@ static void write_lcd(int bits);
 static void write_char(char letter);
 
 static void LCD_setup() {
-  if ((fd = open(fileName, O_RDWR)) < 0) {
-    printf("Failed to open the i2c bus\n");
-    lcd_connected = 0;
-    return;
-  }
+    if ((fd = open(fileName, O_RDWR)) < 0) {
+        printf("Failed to open the i2c bus\n");
+        lcd_connected = 0;
+        return;
+    }
 	
-  if (ioctl(fd,I2C_SLAVE,address) < 0) {
-    printf("Failed to acquire bus access and/or talk to slave.\n");
-    lcd_connected = 0;
-    return;
-  }
-  lcd_connected = 1;
-  lcd_reset();
-  lcd_init();
+    if (ioctl(fd,I2C_SLAVE,address) < 0) {
+        printf("Failed to acquire bus access and/or talk to slave.\n");
+        lcd_connected = 0;
+        return;
+    }
+    lcd_connected = 1;
+    lcd_reset();
+    lcd_init();
 }
 
 static void write_lcd(int bits) {
-  PutBitsOnPins(bits+LCD_EN);
-  PutBitsOnPins(bits);
-  usleep(500);
+    PutBitsOnPins(bits+LCD_EN);
+    PutBitsOnPins(bits);
+    usleep(500);
 }
 
 void lcd_string(char *s) {
-  int i;
-  for(i = 0; i<strlen(s); i++) {
-    write_char(s[i]);
-  }
+    int i;
+    for(i = 0; i<strlen(s); i++) {
+        write_char(s[i]);
+    }
 }
 
 void lcd_line(char *s) {
-  int i;
+    int i;
     
-  for(i = 0; i<20; i++) {
-    if((i+1)>strlen(s)) {
-      write_char(' ');
-	}
-    else {
-      write_char(s[i]);
+    for(i = 0; i<20; i++) {
+        if((i+1)>strlen(s)) {
+            write_char(' ');
+        }
+        else {
+            write_char(s[i]);
+        }
     }
-  }
 }
 
 static void PutBitsOnPins(char bits) {
-  if (lcd_connected == -1) {
-    LCD_setup();
-  }
-  if (lcd_connected == 1) {
-    char buf[1];
-    buf[0] = bits;
-    if (write(fd,buf,1) != 1) {
-      printf("Failed to write to the i2c bus.\n");
-      lcd_connected = 0;
+    if (lcd_connected == -1) {
+        LCD_setup();
     }
-  }
+    if (lcd_connected == 1) {
+        char buf[1];
+        buf[0] = bits;
+        if (write(fd,buf,1) != 1) {
+            printf("Failed to write to the i2c bus.\n");
+            lcd_connected = 0;
+        }
+    }
 }
 
 void lcd_clear() {
-  write_nibbles(CMD_CAH);
+    write_nibbles(CMD_CAH);
 }
 
 static void lcd_reset() {
-  PutBitsOnPins(0xFF);
-  usleep(5000);
-  PutBitsOnPins(0x03+LCD_EN);
-  PutBitsOnPins(0x03);
-  usleep(5000);
-  PutBitsOnPins(0x03+LCD_EN);
-  PutBitsOnPins(0x03);
-  usleep(500);
-  PutBitsOnPins(0x03+LCD_EN);
-  PutBitsOnPins(0x03);
-  usleep(500);
-  PutBitsOnPins(0x02+LCD_EN);
-  PutBitsOnPins(0x02);
-  usleep(500);
+    PutBitsOnPins(0xFF);
+    usleep(5000);
+    PutBitsOnPins(0x03+LCD_EN);
+    PutBitsOnPins(0x03);
+    usleep(5000);
+    PutBitsOnPins(0x03+LCD_EN);
+    PutBitsOnPins(0x03);
+    usleep(500);
+    PutBitsOnPins(0x03+LCD_EN);
+    PutBitsOnPins(0x03);
+    usleep(500);
+    PutBitsOnPins(0x02+LCD_EN);
+    PutBitsOnPins(0x02);
+    usleep(500);
 }
 
 static void lcd_init() {
-  write_nibbles(CMD_SIL|SIL_N);
-  write_nibbles(CMD_EDC);
-  write_nibbles(CMD_CAH);
-  write_nibbles(CMD_SCMD|SCMD_ID);
-  write_nibbles(CMD_EDC|EDC_D);
+    write_nibbles(CMD_SIL|SIL_N);
+    write_nibbles(CMD_EDC);
+    write_nibbles(CMD_CAH);
+    write_nibbles(CMD_SCMD|SCMD_ID);
+    write_nibbles(CMD_EDC|EDC_D);
 }
 
 static void write_nibbles(int bits) {
-  write_lcd((bits >> 4) & 0x0F);
-  write_lcd(bits & 0x0F);
-  usleep(500); 
+    write_lcd((bits >> 4) & 0x0F);
+    write_lcd(bits & 0x0F);
+    usleep(500); 
 }
 
 static void write_char(char letter) {
-  if (((int)letter < 32) || ((int)letter > 125)) {
-    letter = (char)63;
-  }
-  write_lcd((((int)letter >> 4) & 0x0F)|LCD_RS);
-  write_lcd(((int)letter & 0x0F)|LCD_RS);
+    if (((int)letter < 32) || ((int)letter > 125)) {
+        letter = (char)63;
+    }
+    write_lcd((((int)letter >> 4) & 0x0F)|LCD_RS);
+    write_lcd(((int)letter & 0x0F)|LCD_RS);
 }

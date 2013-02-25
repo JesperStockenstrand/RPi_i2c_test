@@ -15,14 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.	
  */
 
-#include<stdio.h>    
-#include<string.h>    
-#include<errno.h>    
-#include<sys/socket.h>
-#include<netdb.h>
-#include<ifaddrs.h>
-#include<stdlib.h>
-#include<unistd.h>
+#include <stdio.h>    
+#include <string.h>    
+#include <errno.h>    
+#include <sys/socket.h>
+#include <netdb.h>
+#include <ifaddrs.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include "lcd_i2c.h"
+#include "buttons_i2c.h"
 
 #define mode_CPU 1
 #define mode_MEM 2
@@ -33,6 +36,7 @@ int mem_tot;
 long double b[7];
 int cpu_interval;
 int i_cpu_load;
+char* host;
 
 int cpu_load() {
     if (cpu_interval == 10) {
@@ -56,7 +60,8 @@ int cpu_load() {
         b[6] = a[6];
     
         cpu_interval = 1;
-    } else {
+    } 
+    else {
         cpu_interval++;
     }
     return(i_cpu_load);
@@ -104,22 +109,18 @@ int uptime() {
     return(i_uptime);
 }
 
-char* net_address()
-{
+char* net_address() {
     FILE *f;
     char line[100] , *p , *c;
     
     f = fopen("/proc/net/route" , "r");
     
-    while(fgets(line , 100 , f))
-    {
+    while(fgets(line , 100 , f)) {
         p = strtok(line , " \t");
         c = strtok(NULL , " \t");
         
-        if(p!=NULL && c!=NULL)
-        {
-            if(strcmp(c , "00000000") == 0)
-            {
+        if(p!=NULL && c!=NULL) {
+            if(strcmp(c , "00000000") == 0) {
                 break;
             }
         }
@@ -128,31 +129,25 @@ char* net_address()
     int fm = AF_INET;
     struct ifaddrs *ifaddr, *ifa;
     int family , s;
-    char host[NI_MAXHOST];
+    
 
-    if (getifaddrs(&ifaddr) == -1) 
-    {
+    if (getifaddrs(&ifaddr) == -1) {
         perror("getifaddrs");
         exit(EXIT_FAILURE);
     }
 
-    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) 
-    {
-        if (ifa->ifa_addr == NULL)
-        {
+    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr == NULL) {
             continue;
         }
 
         family = ifa->ifa_addr->sa_family;
 
-        if(strcmp( ifa->ifa_name , p) == 0)
-        {
-            if (family == fm) 
-            {
+        if(strcmp( ifa->ifa_name , p) == 0) {
+            if (family == fm) {
                 s = getnameinfo( ifa->ifa_addr, (family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6) , host , NI_MAXHOST , NULL , 0 , NI_NUMERICHOST);
                 
-                if (s != 0) 
-                {
+                if (s != 0) {
                     exit(EXIT_FAILURE);
                 }
                 
@@ -166,10 +161,7 @@ char* net_address()
     return("0.0.0.0");
 }
 
-
-
-int main(void)
-{
+int main(void) {
     cpu_interval = 0;
     int mem_load;
     int display_mode = mode_CPU; 
@@ -181,6 +173,7 @@ int main(void)
     lcd_line("        2013");
     lcd_line("Jesper Stockenstrand");
     usleep(5000000);
+    
     for(;;) {
         int cpu_l;
             
